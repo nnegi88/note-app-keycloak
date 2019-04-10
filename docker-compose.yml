@@ -1,0 +1,43 @@
+version: "3.6"
+
+services:
+  notes-app-keycloak-db:
+    image: mysql:5.7
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: keycloak
+      MYSQL_USER: keycloak
+      MYSQL_PASSWORD: keycloak
+    ports:
+      - "3346:3306"
+    networks:
+      - default
+
+  notes-app-keycloak:
+    depends_on:
+      - notes-app-keycloak-db
+    build: .
+    image: notes-app-keycloak:local
+    container_name: notes-app-keycloak
+    ports:
+      - "9005:8080"
+    restart: always
+    environment:
+      DB_VENDOR: MYSQL
+      DB_ADDR: notes-app-keycloak-db
+      DB_PORT: 3306
+      DB_DATABASE: keycloak
+      DB_USER: keycloak
+      DB_PASSWORD: keycloak
+      KEYCLOAK_USER: naveen
+      KEYCLOAK_PASSWORD: naveen
+    networks:
+      - default
+
+volumes:
+  db_data:
+networks:
+  default:
